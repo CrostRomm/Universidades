@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:jsf="http://xmlns.jcp.org/jsf"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head>
+        <title>Inicio</title>
+        <f:event type="preRenderView" listener="#{bean.listaDeUniversidad()}"/>
+        <f:event type="preRenderView" listener="#{bean.mostrarDiplomado()}"/>
+        <f:event type="preRenderView" listener="#{bean.listaDeDiplomado()}"/>
+    </h:head>
+    <h:body>
+        <h:form id="formulario" enctype="multipart/form-data">
+                <h:outputLabel for="l3">Escudo: </h:outputLabel>
+                <p:fileUpload id="foto" value="#{bean.file}"
+                  required="true"
+                  mode="advanced"
+                  skinSimple="true" 
+                  allowTypes="/(\.|\/)(gif|jpe?g|png)$/"
+                  fileUploadListener="#{bean.fileUploadListener}"></p:fileUpload>
+                <br/>
+                <br/>
+                <h:outputLabel for="l2">Nombre Universidad: </h:outputLabel>
+                <h:inputText id="nombreu" value="#{bean.pojoU.nombre}"></h:inputText>
+                <br/>
+                <br/>
+                <h:outputLabel for="l3">Extension: </h:outputLabel>
+                <h:inputText id="extensionu" value="#{bean.pojoU.extension}"></h:inputText>
+                <br/>
+                <br/>
+                <h:outputLabel for="l3">Fundación: </h:outputLabel>
+                <p:calendar id="fundacionu" value="#{bean.pojoU.fundacion}" showOn="button" pattern="yyyy-MMM-dd"/>
+                <p:separator/>
+                <p:commandButton
+                    value="AGREGAR"
+                    action="#{bean.crearUniversidad()}"
+                    update=":formulario"
+                    >
+                </p:commandButton>
+                <p:separator/>
+                <p:growl id="msgs" showDetail="true"/>
+                <p:dataTable id="tbl" emptyMessage="No hay universidades aún" paginator="true" rows="3" var="univer" value="#{bean.listaUniversidad()}">
+
+                    <p:column headerText="Id">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{univer.id}" /></f:facet>
+                            <f:facet name="input"><p:inputText id="id_uni" value="#{univer.id}"/></f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Nombre">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{univer.nombre}" /></f:facet>
+                            <f:facet name="input">
+                                <p:inputText id="nombre_universidad" value="#{univer.nombre}"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Escudo">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <p:graphicImage width="100px" height="80px" library="img" name="#{univer.escudo}"/>
+                                <!--<img library="img" src="img/#{univer.escudo}" style="width: 50%; height: 25%"/>-->
+                            </f:facet>
+                            <f:facet name="input">
+                               <img library="img" src="img/#{univer.escudo}" style="width: 50%; height: 25%"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Extension">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{univer.extension}" /></f:facet>
+                            <f:facet name="input"><p:inputText id="extension_uni" value="#{univer.extension}" required="true"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Fundacion">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{univer.fecha}" /></f:facet>
+                            <f:facet name="input"><p:inputText id="fecha_uni" value="#{univer.fecha}" required="true"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Eliminar" width="10%">
+                        <button type="submit" class="btn btn-danger" jsf:actionListener="#{controlU.eliminarCuenta(univer)}">
+                            X
+                        </button>                        
+                    </p:column>
+                </p:dataTable>
+                <br/>
+                <br/>
+                <br/>
+                <p:outputLabel value="Diplomado"/>
+                <p:separator/>
+                <!-- DIPLOMADOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO -->
+                <p:messages id="messages" showDetail="true" closable="true" autoUpdate="true"/>
+                    <br/>
+                    <h:outputLabel for="l2">Nombre diplomado: </h:outputLabel>
+                    <h:inputText id="nombred" value="#{bean.pojoD.nombre}"></h:inputText>
+                    <br/>
+                    <br/>
+                    <h:outputLabel for="l3">Fecha de inicio: </h:outputLabel>
+                    <p:calendar id="finiciod" value="#{bean.pojoD.fechaInicio}" showOn="button" pattern="yyyy-MMM-dd"/>
+                    <br/>
+                    <br/>
+                    <h:outputLabel for="l3">Fecha de finalización: </h:outputLabel>
+                    <p:calendar id="ffind" value="#{bean.pojoD.fechaFin}" showOn="button" pattern="yyyy-MMM-dd"/>
+                    <br/>
+                    <br/>
+                    <p:inputTextarea rows="10" cols="50" value="#{bean.pojoD.descripcion}"/>
+                    <br/>
+                    <br/>
+                    <h:outputLabel for="l4">¿A qué universidad pertenece el diplomado?: </h:outputLabel>
+                    <p:selectOneMenu value="#{bean.pojoD.idU}" id="seleccionUni">
+                        <f:selectItems  value="#{bean.listaDeUniversidad()}" var="uni" itemLabel="#{uni.nombre}" itemValue="#{uni.id}"/>
+                        <f:ajax execute="seleccionUni"/>
+                    </p:selectOneMenu>
+                    <p:separator/>
+                    <h:commandButton
+                        value="AGREGAR"
+                        action="#{bean.crearDiplomado()}"
+                        >
+                    </h:commandButton>
+                    <p:separator/>
+
+                    <p:dataTable var="diplo" value="#{bean.listaDiplomado}"  paginator="true" rows="3">
+                        <p:column headerText="Id">
+                            <h:outputText value="#{diplo.id}" />
+                        </p:column>
+
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{diplo.nombre}" />
+                        </p:column>
+
+                        <p:column headerText="Fecha de inicio">
+                            <h:outputText value="#{diplo.fechaInicio}"/>
+                        </p:column>
+
+                        <p:column headerText="Fecha de finalización">
+                            <h:outputText value="#{diplo.fechaFin}"/>
+                        </p:column>
+                        
+                        <p:column headerText="Descripcion">
+                            <h:outputText value="#{diplo.descripcion}"/>
+                        </p:column>
+                        
+                        <p:column headerText="Universidad">
+                            <h:outputText value="#{diplo.universidad.nombre}" />
+                        </p:column>
+                        <p:column headerText="Eliminar" width="10%">
+                            <button type="submit" class="btn btn-danger" jsf:actionListener="#{controlD.eliminarCuenta(diplo)}">
+                                    X
+                            </button>                        
+                        </p:column>
+                    </p:dataTable>
+                    <!-- ALUMNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO -->
+                    <br/>
+                    <p:separator/>
+                    <h:outputLabel for="l2">Nombre: </h:outputLabel>
+                    <p:inputText id="nombrea" value="#{bean.pojoA.nombre}" required="true" placeholder="Nombre estudiante" maxlength="15"></p:inputText>
+                    <br/>
+                    <br/>
+                    <h:outputLabel for="l3">Foto: </h:outputLabel>
+                    <p:fileUpload id="fotoa" value="#{bean.foto}"
+                        required="true"
+                        mode="advanced"
+                        skinSimple="true" 
+                        allowTypes="/(\.|\/)(gif|jpe?g|png)$/"
+                        fileUploadListener="#{bean.fileUploadListener2}"></p:fileUpload>
+                    <br/>
+                    <br/>
+                    <h:outputLabel for="l2">Edad: </h:outputLabel>
+                    <p:inputText id="edada" value="#{bean.pojoA.edad}" type="number" required="true" placeholder="Nombre estudiante" maxlength="15"></p:inputText>
+                    <br/>
+                    <br/>
+                    <h:outputLabel for="l4">¿A qué diplomado pertenece el alumno: </h:outputLabel>
+                    
+                    <p:selectOneMenu value="#{bean.pojoA.id}">
+                        <f:selectItems  value="#{bean.listaDeDiplomado()}" var="dip" itemLabel="#{dip.nombre}" itemValue="#{dip.id}"/>
+                    </p:selectOneMenu>
+                    <p:separator/>
+                    <button class="btn btn-success" jsf:actionListener="#{bean.crearEstudiante()}">AGREGAR
+                    </button>
+                    <p:separator/>
+
+                    <p:dataTable var="est" value="#{bean.listarEstudiante()}"  paginator="true" rows="3">
+                        <p:column headerText="Id">
+                            <h:outputText value="#{est.id}" />
+                        </p:column>
+
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{est.nombre}" />
+                        </p:column>
+
+                        <p:column headerText="Foto">
+                            <img library="foto" src="foto/#{est.foto}" style="width: 50%; height: 25%"/>
+                        </p:column>
+
+                        <p:column headerText="Edad">
+                            <h:outputText value="#{est.edad}" />
+                        </p:column>
+                        
+                        <p:column headerText="Diplomado">
+                            <h:outputText value="#{est.diplomado.nombre}" />
+                        </p:column>
+                    </p:dataTable>
+                    <!-- REPORTEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE -->
+                    <div align="center">
+                        <p:selectOneMenu value="#{bean.pojoD.idU}" id="seleccionUniReporte">
+                            <f:selectItems  value="#{bean.listaDeUniversidad()}" var="unir" itemLabel="#{unir.nombre}" itemValue="#{unir.id}"/>
+                            <f:ajax execute="seleccionUni"/>
+                        </p:selectOneMenu>
+                        <button class="btn btn-success" jsf:actionListener="#{bean.generarReporte()}">Reporte
+                    </button>
+
+                        <p:dataTable var="rep" value="#{bean.listaVista}" emptyMessage="No hay resultados"  paginator="true" rows="3">
+                        <p:column headerText="Id">
+                            <h:outputText value="#{rep.id}" />
+                        </p:column>
+
+                        <p:column headerText="N. Universidad">
+                            <h:outputText value="#{rep.nombreUniversidad}" />
+                        </p:column>
+                            
+                        <p:column headerText="Extension">
+                            <h:outputText value="#{rep.extension}" />
+                        </p:column>
+                        
+                        <p:column headerText="N. Diplomado">
+                            <h:outputText value="#{rep.nombreDiplomado}" />
+                        </p:column>
+                                
+                        <p:column headerText="Inicio">
+                            <h:outputText value="#{rep.fechaInicio}" />
+                        </p:column>    
+                            
+                       <p:column headerText="Fin">
+                           <h:outputText value="#{rep.fechaFinal}" />
+                        </p:column>     
+                            
+                        <p:column headerText="N. Alumno">
+                            <h:outputText value="#{rep.nombreAlumno}" />
+                        </p:column>    
+                            
+                        <p:column headerText="Foto">
+                            <img library="foto" src="foto/#{rep.fotoAlumno}" style="width: 50%; height: 25%"/>
+                        </p:column>
+                    </p:dataTable>
+                    </div>
+                    
+        </h:form>
+    </h:body>
+</html>
+
